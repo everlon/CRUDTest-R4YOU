@@ -1,0 +1,111 @@
+{% extends "painel/base.twig" %}
+
+{% block body %}
+    {% block content %}
+
+        <ul class="uk-breadcrumb">
+            <li><a href="{{ path('app') }}">Home</a></li>
+            <li class="uk-active"><span>Representantes</span></li>
+        </ul>
+
+        <div class="uk-width-1-1" style="margin-top:1%">
+
+            <h1>Representantes</h1><hr>
+
+            <div class="uk-width-1-1 uk-text-right">
+                <form class="uk-form" action="{{ path('team') }}" method="post">
+
+                    <div class="uk-button-dropdown uk-text-left uk-hidden-small" data-uk-dropdown="{mode:'click'}">
+                        <a class="uk-button">Listar <i class="uk-icon-caret-down"></i></a>
+                        <div class="uk-dropdown uk-dropdown-small">
+                            <ul class="uk-nav uk-nav-dropdown">
+                                <li><a href="{{ path('team', {'order': 'ASC' } ) }}" onclick="">Ordem crescente</a></li>
+                                <li><a href="{{ path('team', {'order': 'DESC' } ) }}" onclick="">Ordem inversa</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    &nbsp;
+
+                    <div class="uk-form-icon uk-width-small-1-2 uk-width-medium-2-6">
+                        <i class="uk-icon-search"></i>
+                        <input class="uk-width-1-1" type="text" name="busca" placeholder="Buscar < Enter >">
+                    </div>
+                    &nbsp;
+                    <a class="uk-button uk-button-primary uk-width-small-1-3 uk-width-medium-1-6" href="{{ path('team_show') }}">Novo</a>
+                </form>
+            </div>
+
+            <div style="clear:both"></div>
+
+                {% if notice is defined %}
+                    <div class="uk-alert uk-alert-success" data-uk-alert>
+                        <a href="" class="uk-alert-close uk-close"></a>
+                        {{notice|raw}}
+                    </div>
+                {% endif %}
+
+            <span id="tour-list-team">&nbsp;</span>
+            {% if data|length > 0 %}
+            <table id="table-clientes" class="uk-table uk-table-striped">
+                <thead>
+                    <tr>
+                        {# <th style="width:30px"></th> #}
+                        <th>Nome</th>
+                        <th class="uk-hidden-small">E-mail</th>
+                        <th class="uk-hidden-small">Telefone</th>
+                        <th class="uk-hidden-small">Região de atuação</th>
+                        <th class="uk-hidden-small"></th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for campo in data %}
+                    <tr>
+                        {# <td class="uk-hidden-small">{% if campo.imagem != '' %}<img class="uk-border-circle" width="30" height="30" src="{{ app.uploads }}/fotos/{{ campo.imagem }}?{{ "now"|date("zHis") }}">{% else %}<img class="uk-border-circle" src="http://getuikit.com/docs/images/placeholder_200x200.svg" width="30" height="30">{% endif %}</td> #}
+                        <td>{{ campo.nome|raw }}</td>
+                        <td class="uk-hidden-small">{% if campo.email != '' %}{{ campo.email }}{% else %}<span class="uk-text-danger">Obrigatório: Informe o endereço de e-mail</span>{% endif %}</td>
+                        <td class="uk-hidden-small"><span>{{ campo.telefone1 }}</span></td>
+                        <td class="uk-hidden-small"><span>{{ campo.codigo }}</span></td>
+                        <td width="1" class="uk-hidden-small">{% if campo.status == 1 %}<i class="uk-icon-eye"></i>{% else %}<i class="uk-icon-eye-slash"></i>{% endif %}</td>
+
+                        <td width="1">
+                            <div class="uk-button-group">
+                                <a class="uk-button uk-button-primary" href="{{ path('team_show', {'id': campo.id} ) }}"><i class="uk-icon-edit"></i> <span class="uk-visible-large">Editar</span></a>
+                                <a class="uk-button uk-button-danger" data-uk-modal="{target:'#mid-{{ campo.id }}'}"><i class="uk-icon-trash-o"></i></a>
+                            </div>
+
+                            <div id="mid-{{ campo.id }}" class="uk-modal">
+                                <div class="uk-modal-dialog">
+                                    <a class="uk-modal-close uk-close"></a>
+                                    <div class="uk-modal-header">Confirmação</div>
+                                    <p>Deseja realmente excluir?</p>
+                                    <div class="uk-modal-footer uk-text-right">
+                                        <a href="{{ path('team_del', {'id': campo.id} ) }}" class="uk-button uk-button-danger">Confirmar exclusão</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+            {% else %}
+                <p>Nenhum profissional encontrado</p>
+            {% endif %}
+
+        </div>
+
+    {# <script src="{{ app.assets.js }}/jquery.maskedinput.min.js"></script> #}
+    <script type="text/javascript">
+        setTimeout(function(){ $(".uk-alert").hide() }, 10000);
+
+        $('span').text(function(i, text) {
+            return text.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+        });
+    </script>
+
+    {% endblock %}
+{% endblock %}

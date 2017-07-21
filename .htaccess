@@ -1,0 +1,2 @@
+# /.htaccess
+AddType application/x-httpd-php55 .php

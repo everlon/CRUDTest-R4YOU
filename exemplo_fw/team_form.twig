@@ -1,0 +1,218 @@
+{% extends "painel/base.twig" %}
+
+{% block body %}
+    {% block content %}
+
+        <script src="{{ app.assets.js }}/jquery.maskedinput.min.js"></script>
+        <link rel="stylesheet" href="{{ app.assets.css }}/redactor.css">
+        <link rel="stylesheet" href="{{ app.assets.css }}/components/datepicker.css">
+        <script src="{{ app.assets.js }}/redactor/redactor.js"></script>
+        <script src="{{ app.assets.js }}/components/datepicker.js"></script>
+
+
+        <ul class="uk-breadcrumb">
+            <li><a href="{{ path('app') }}">Home</a></li>
+            <li class="uk-active"><span>Representantes</span></li>
+        </ul>
+
+            <div class="uk-margin-top">
+
+                <h1>Cadastro dos Representantes</h1><hr>
+
+                <form name="newteam" id="newteam" class="uk-form" action="{{ path('team_save') }}" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="id" value="{% if data is defined %}{{ data.id }}{% endif %}">
+
+                    {% if notice is defined %}
+                        <div class="uk-alert uk-alert-success uk-animation-shake" data-uk-alert>
+                            <a href="" class="uk-alert-close uk-close"></a>
+                            {{ notice|raw }}
+                        </div>
+                    {% endif %}
+
+                    <div id="msg"></div>
+
+                    <div class="uk-form-row">
+                        <ul class="uk-grid uk-grid-width-1-2">
+                            <li class="uk-width-2-10 uk-text-center">
+                                {% if data is defined %}
+                                    <figure class="uk-overlay uk-overlay-hover" id="img-field">
+                                        <div id="img" style="min-height:250px">
+                                            {% if data.imagem != '' %}
+                                                <img class="uk-overlay-spin" width="250" height="250" src="{{ app.uploads }}/fotos/{{ data.imagem }}?{{ "now"|date("zHis") }}">
+                                            {% else %}
+                                                <img src="http://getuikit.com/docs/images/placeholder_200x200.svg" width="250" height="250">
+                                            {% endif %}
+                                        </div>
+                                            <figcaption class="uk-overlay-panel uk-overlay-background uk-overlay-bottom uk-overlay-slide-bottom">
+                                                <div class="uk-form-file uk-text-contrast"><button type="button" class="uk-button uk-button-mini uk-button-primary">Atualizar foto</button><input id="imagem" name="imagem" type="file" accept="image/*"></div>
+                                            </figcaption>
+                                    </figure>
+                                {% else %}
+                                    <figure class="uk-overlay">
+                                        <img src="http://getuikit.com/docs/images/placeholder_200x200.svg" width="250" height="250">
+                                        <figcaption class="uk-overlay-panel uk-overlay-background uk-flex uk-flex-center uk-flex-middle uk-text-center">
+                                            <div class="uk-text-small">Envio da foto será na edição.</div>
+                                        </figcaption>
+                                    </figure>
+                                {% endif %}
+                                <div id="valid_msg"></div>
+                            </li>
+                            <li class="uk-width-8-10">
+                                <div class="uk-form-row">
+                                    <label class="uk-form-label" for="">Nome completo</label>
+                                    <div class="uk-form-controls">
+                                        <input id="nome" name="nome" class="uk-width-1-1 uk-form-large" type="text" placeholder="Nome completo" maxlength="100" value="{% if data is defined %}{{ data.nome|raw }}{% endif %}">
+                                    </div>
+                                </div>
+
+                                <div class="uk-form-row">
+                                    <ul class="uk-grid uk-grid-width-1-2">
+                                        <li class="uk-width-1-2">
+                                            <label class="uk-form-label" for="">Região de atuação</label>
+                                            <div class="uk-form-controls">
+                                                <input name="codigo" id="codigo" class="uk-width-1-1 uk-form-large" type="text" placeholder="Região de atuação" value="{% if data is defined %}{{ data.codigo }}{% endif %}">
+                                            </div>
+                                        </li>
+                                        <li class="uk-width-1-2">
+                                            <label class="uk-form-label" for="">Exibir no site</label>
+                                            <select name="status" class="uk-width-1-1 uk-form-large">
+                                                <option value="1" {% if data is defined %}{% if data.status == '1' %} selected{% endif %}{% endif %}>Mostrar no site</option>
+                                                <option value="0" {% if data is defined %}{% if data.status == '0' %} selected{% endif %}{% endif %}>NÃO mostrar no site</option>
+                                            </select>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <div class="uk-form-row">
+                                    <label class="uk-form-label" for="">E-mail</label>
+                                    <div class="uk-form-controls">
+                                        <input id="email" name="email" class="uk-width-1-1 uk-form-large" type="email" placeholder="E-mail" value="{% if data is defined %}{{ data.email }}{% endif %}">
+                                    </div>
+                                </div>
+                                <div class="uk-form-row">
+                                    <ul class="uk-grid uk-grid-width-1-2">
+                                        <li class="uk-width-1-2">
+                                            <label class="uk-form-label" for="">Telefone</label>
+                                            <div class="uk-form-controls">
+                                                <input name="telefone1" id="telefone1" class="uk-width-1-1 uk-form-large" maxlength="15" type="text" placeholder="Telefone" value="{% if data is defined %}{{ data.telefone1 }}{% endif %}">
+                                            </div>
+                                        </li>
+                                        <li class="uk-width-1-2">
+                                            <label class="uk-form-label" for="">Celular</label>
+                                            <div class="uk-form-controls">
+                                                <input name="telefone2" id="telefone2" class="uk-width-1-1 uk-form-large" maxlength="15" type="text" placeholder="Celular" value="{% if data is defined %}{{ data.telefone2 }}{% endif %}">
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                            </li>
+                        </ul>
+                    </div>
+                    <hr>
+                    {# <div class="uk-form-row">
+                        <fieldset>
+                            <legend class="uk-text-muted">Resumo profissional</legend>
+                            <textarea id="bio" name="bio" class="uk-width-1-1 uk-form-large" placeholder="digite um pequeno histórico profissional...">
+                                {% if data is defined %}{{ data.bio|raw }}{% endif %}
+                            </textarea>
+                        </fieldset>
+                    </div> #}
+
+                    <p>
+                        <button class="uk-button uk-button-primary" type="submit"><i class="uk-icon-check"></i> Salvar e continuar...</button>
+                        <a class="uk-button uk-button-link" href="{{ path('team') }}"><i class="uk-icon-arrow-left"></i> voltar</a>
+                    </p>
+
+                </form>
+
+            </div>
+
+        <script type="text/javascript">
+            jQuery(function($){
+                $('#telefone1').onfocus    = function() { mascara(this, mtel); }
+                $('#telefone1').onkeypress = function() { mascara(this, mtel); }
+                $('#telefone2').onfocus    = function() { mascara(this, mtel); }
+                $('#telefone2').onkeypress = function() { mascara(this, mtel); }
+                $('#bio').redactor();
+            });
+
+                {% if data is defined %}
+                $(function() {
+                    $("#imagem").bind("change", function () {
+                        $('#valid_msg').html('')
+                        if (this.files[0].size > 2048576) {
+                            $('#valid_msg').html('<div class="uk-alert uk-alert-danger" data-uk-alert><a class="uk-alert-close uk-close"></a>Imagem muito grande</div>')
+                            return false;
+                        }
+                        if (this.files[0].type != 'image/jpeg') {
+                            $('#valid_msg').html('<div class="uk-alert uk-alert-danger" data-uk-alert><a class="uk-alert-close uk-close"></a>Somente imagens Jpeg</div>')
+                            return false;
+                        } else {
+                            $('#valid_msg').html('<i class="uk-icon-spinner uk-icon-spin"></i>')
+                            var formData = new FormData();
+                            formData.append( 'file', this.files[0] );
+                            formData.append( 'id', {{ data.id }} );
+                            $.ajax({
+                                   url : "{{ path('uploadImgTeam') }}",
+                                   type : 'POST',
+                                   data : formData,
+                                   processData: false,
+                                   contentType: false,
+                                   success : function(data) {
+                                        $('#valid_msg').html('<div class="uk-alert uk-alert-success" data-uk-alert><a class="uk-alert-close uk-close"></a>'+data.notice+'</div>')
+                                        $('#img').load( location.href +' #img' );
+                                        console.log(data);
+                                   }
+                            });
+                        }
+
+                    });
+                });
+                {% endif %}
+
+
+            $('#newteam').submit(function() {
+                $(window).scrollTop(-1)
+                $('#nome').removeClass('uk-form-danger')
+                $('#email').removeClass('uk-form-danger')
+                $('#msg').html('')
+
+                if($('#nome').val() == '' || $('#nome').val() == null) {
+                    $('#nome').addClass('uk-form-danger')
+                    $('#msg').addClass('uk-form-danger')
+                    $('#msg').html('<div class="uk-alert uk-alert-danger" data-uk-alert><a href="" class="uk-alert-close uk-close"></a>Nome não pode ser vazio.</div>')
+                    $('#nome').focus()
+                    return false;
+                } else
+                    if ($("#nome").val().length < 3) {
+                        $('#nome').addClass('uk-form-danger')
+                        $('#msg').addClass('uk-form-danger')
+                        $('#msg').html('<div class="uk-alert uk-alert-danger" data-uk-alert><a href="" class="uk-alert-close uk-close"></a>O tamanho mínimo de seu nome é 3 caracteres.</div>');
+                        $('#nome').focus()
+                        return false
+                }
+
+                /* Validar EMail */
+                if( $('#email').val() == '' || $('#email').val() == null ) {
+                    $('#email').focus();
+                    $('#email').addClass('uk-form-danger')
+                    $('#msg').html('<div class="uk-alert uk-alert-danger" data-uk-alert><a href="" class="uk-alert-close uk-close"></a>Informe seu endereço de e-mail.</div>')
+                    return false
+                } else
+                    /* Verificar se o Email é valido */
+                    var filter = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+
+                    if (!filter.test( $('#email').val() )) {
+                        $('#email').focus();
+                        $('#email').addClass('uk-form-danger')
+                        $('#msg').html('<div class="uk-alert uk-alert-danger" data-uk-alert><a href="" class="uk-alert-close uk-close"></a>Seu e-mail não é válido.</div>')
+                        return false
+                    };
+            });
+
+            setTimeout(function(){ $(".uk-alert").hide() }, 10000);
+        </script>
+
+    {% endblock %}
+{% endblock %}
